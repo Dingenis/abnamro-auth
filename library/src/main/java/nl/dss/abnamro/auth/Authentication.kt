@@ -46,10 +46,10 @@ object Authentication {
         val service = getService()
         val key = KeyFactory.generatePrivateKey(key)
         val sendToken = TokenFactory.generate(apiKey, key)
-        service.authenticate(apiKey, sendToken).enqueue(Callback(callback))
+        service.authenticate(apiKey, sendToken).enqueue(InternalCallback(callback))
     }
 
-    internal data class Callback(private val callback: nl.dss.abnamro.auth.Callback<AccessToken>?) : retrofit2.Callback<AccessToken> {
+    internal data class InternalCallback(private val callback: nl.dss.abnamro.auth.Callback<AccessToken>?) : retrofit2.Callback<AccessToken> {
         override fun onResponse(call: Call<AccessToken>, response: Response<AccessToken>) {
             if(response.isSuccessful) {
                 val token = response.body()
