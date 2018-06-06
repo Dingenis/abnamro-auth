@@ -5,7 +5,6 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
@@ -29,6 +28,20 @@ object Authentication {
 
     var token : AccessToken? = null
 
+    fun setup(config : AuthenticationConfig) {
+        apiKey = config.apiKey
+        key = config.key
+
+        this.client = config.client
+                .build()
+
+        this.retrofit = config.retrofit
+                .client(client)
+                .build()
+
+        refresh = config.refresh
+    }
+
     fun authenticate(callback : nl.dss.abnamro.auth.Callback<AccessToken>) {
         val service = getService()
         val key = KeyFactory.generatePrivateKey(key)
@@ -43,7 +56,7 @@ object Authentication {
                 if(token != null) {
                     callback?.onSuccess(token)
                 }
-                Authentication
+                Authentication.token = token
             } else {
                 val errorBody = response.errorBody()
                 if(errorBody != null) {
